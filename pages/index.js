@@ -1,20 +1,36 @@
-import Head from 'next/head'
+import Head from 'next/head';
+import Header from '../components/Header';
+import Nav from '../components/Nav';
+import Results from '../components/Results';
+import requests from '../utils/requests';
 
-export default function Home() {
-  return (
-    <div>
-      <Head>
-        <title>Hulu Clone</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+export default function Home({ results }) {
 
-      <h1>Lets build Hulu 2.0</h1>
+	return (
+		<div>
+			<Head>
+				<title>Hulu Clone</title>
+				<link rel='icon' href='/favicon.ico' />
+			</Head>
+			<Header />
+			<Nav />
+			<Results results={results} />
+		</div>
+	);
+}
 
-      {/* Header */}
+export async function getServerSideProps(context) {
+	const genre = context.query.genre;
 
-      {/* Nav */}
+	const request = await fetch(
+		`https://api.themoviedb.org/3${
+			requests[genre]?.url || requests.fetchTrending.url
+		}`
+	).then((res) => res.json());
 
-      {/* Results */}
-    </div>
-  )
+	return {
+		props: {
+			results: request.results,
+		},
+	};
 }
